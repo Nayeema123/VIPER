@@ -1,0 +1,10 @@
+Uploaded_variation,prob_pathogenic_max,prob_pathogenic_mean,n_transcripts,gene,consequence,impact,variant_class,max_af,clinvar_status,predicted_class
+10_43124887_C/T,0.04577176235924149,0.0234277422241386,8,RET,missense_variant,MODERATE,SNV,0.04246,Benign/LB,Likely_Benign
+10_70600631_G/A,0.03182304865740452,0.019584863303481585,9,PALD1,intron_variant,MODIFIER,SNV,0.1776,Pathogenic/LP,Likely_Benign
+13_102875580_G/C,0.011148104210182742,0.009237730228623009,15,ERCC5,non_coding_transcript_exon_variant,MODIFIER,SNV,1.0,Benign/LB,Likely_Benign
+14_103699416_G/A,0.025046976355193748,0.01279440987528856,23,XRCC3,downstream_gene_variant,MODIFIER,SNV,0.4309,Benign/LB,Likely_Benign
+16_79599208_C/A,0.14054636323455397,0.11747147291241551,17,-,upstream_gene_variant,MODIFIER,SNV,3.053e-05,VUS,Likely_Benign
+17_12020957_T/C,0.7093541040952422,0.3688577249104945,11,MAP2K4,"missense_variant,NMD_transcript_variant",MODERATE,SNV,0.0,Not_in_ClinVar,Uncertain
+1_241879225_C/A,0.02365191606173714,0.018858386081052617,4,EXO1,missense_variant,MODERATE,SNV,0.0006511,Not_in_ClinVar,Likely_Benign
+2_58226733_G/C,0.3349574991512808,0.12020468857940589,124,FANCL,"intron_variant,NMD_transcript_variant",MODIFIER,SNV,0.0004817,Not_in_ClinVar,Uncertain
+3_4316659_G/A,0.08936644433839934,0.06315704592760026,9,SETMAR,downstream_gene_variant,MODIFIER,SNV,0.000193,Not_in_ClinVar,Likely_Benign

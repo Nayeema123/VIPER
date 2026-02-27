@@ -1,0 +1,14 @@
+{
+  "best_model": "Random Forest",
+  "upper_thresh": 0.8,
+  "lower_thresh": 0.2,
+  "method": "Fixed clinical thresholds (Tavtigian et al. 2020)",
+  "pathogenic_precision": 0.9896,
+  "benign_precision": 0.992,
+  "zone_labels": {
+    "> 0.8": "Likely_Pathogenic",
+    "0.2 to 0.8": "Uncertain",
+    "< 0.2": "Likely_Benign"
+  },
+  "reference": "Tavtigian SV et al. Hum Mutat. 2020"
+}

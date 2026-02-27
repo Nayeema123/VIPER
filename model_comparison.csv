@@ -1,0 +1,5 @@
+,train_time_s,acc_transcript,auc_transcript,acc_variant,auc_variant,precision_path,recall_path,f1_path,precision_ben,recall_ben,f1_ben
+Random Forest,38.4,0.8789,0.9522,0.7396,0.961,0.6164,0.9781,0.7562,0.9738,0.5718,0.7205
+XGBoost,11.7,0.8806,0.9532,0.7557,0.9596,0.6327,0.9734,0.7669,0.9699,0.6026,0.7433
+Logistic Regression,9.2,0.8741,0.9487,0.7428,0.9561,0.6209,0.9684,0.7566,0.9633,0.5841,0.7272
+SVM,1517.5,0.8687,0.9428,0.7257,0.9532,0.6048,0.9687,0.7447,0.9619,0.5548,0.7037
