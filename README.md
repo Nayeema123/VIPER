@@ -20,7 +20,7 @@ A machine learning framework for predictive interpretation of variants of uncert
 - ClinVar GRCh38 VCF (January 2026 release)
 - FTP: https://ftp.ncbi.nih.gov/snp/latest_release/VCF/GCF_000001405.40.gz
 - VEP v114.2 offline cache, GRCh38 assembly
-- Training set: 35998 unique variants (28798 train / 7,200 test)
+- Training set: 35998 unique variants (28798 train / 7200 test)
 
 ## Thresholds
 Aligned with Tavtigian et al. (2020) Bayesian ACMG/AMP framework:
