@@ -4,8 +4,8 @@ A machine learning framework for predictive interpretation of variants of uncert
 
 ## Key Results
 - Best model: Random Forest (variant-level AUC-ROC = 0.961)
-- VUS reclassified at >99% precision: 36.9% (21,493 / 58,249)
-- Likely Pathogenic: 16,211 | Likely Benign: 5,282 | Uncertain: 36,756
+- VUS reclassified at >99% precision: 36.9% (21493 / 58249)
+- Likely Pathogenic: 16211 | Likely Benign: 5,282 | Uncertain: 36756
 - Thresholds: P > 0.80 (Likely Pathogenic) | P < 0.20 (Likely Benign)
 
 ## Notebooks — run in order
@@ -18,9 +18,9 @@ A machine learning framework for predictive interpretation of variants of uncert
 
 ## Data
 - ClinVar GRCh38 VCF (January 2026 release)
-- FTP: https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz
+- FTP: https://ftp.ncbi.nih.gov/snp/latest_release/VCF/GCF_000001405.40.gz
 - VEP v114.2 offline cache, GRCh38 assembly
-- Training set: 35,998 unique variants (28,798 train / 7,200 test)
+- Training set: 35998 unique variants (28798 train / 7,200 test)
 
 ## Thresholds
 Aligned with Tavtigian et al. (2020) Bayesian ACMG/AMP framework:
