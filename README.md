@@ -8,7 +8,7 @@ A machine learning framework for predictive interpretation of variants of uncert
 - Likely Pathogenic: 16211 | Likely Benign: 5,282 | Uncertain: 36756
 - Thresholds: P > 0.80 (Likely Pathogenic) | P < 0.20 (Likely Benign)
 
-## Notebooks — run in order
+## Notebooks - run in order
 | Notebook | Description |
 |---|---|
 | `vus_eda_transcriptlevel.ipynb` | Data curation, VEP annotation processing, EDA, feature engineering |
