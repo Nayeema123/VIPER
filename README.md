@@ -13,157 +13,27 @@ A machine learning framework for predictive interpretation of variants of uncert
 | VUS reclassified (of 40,894) | ~69.4% |
 | High-confidence coverage | ~99% |
 
-## Repository Structure
+What This Repository Contains
+This repository covers the full VIPER analysis pipeline across five notebooks.
+Notebook 1 — EDA and Data Preparation loads the ClinVar dataset, groups raw classification terms into Pathogenic, Benign, and VUS categories, performs exploratory data analysis across variant consequence, CADD PHRED score, population allele frequency, and VEP IMPACT categories, and produces the engineered feature matrix used for model training.
+Notebook 2 — Model Training trains and compares four classifiers (Random Forest, XGBoost, SVM, Logistic Regression), tunes the top two using GridSearchCV with 5-fold cross-validation, evaluates performance with ROC and Precision-Recall curves including bootstrap confidence intervals, and defines the three-zone probabilistic classification scheme.
+Notebook 3 — SHAP Analysis uses TreeExplainer to compute SHAP values on a stratified test sample, producing global feature importance rankings, a beeswarm plot showing directional feature effects, and dependence plots for the top three features (CADD PHRED, MAX_AF, PolyPhen Score).
+Notebook 4 — VUS Reclassification applies the trained model to all 40,894 held-out VUS variants, reports reclassification outcomes across four probability thresholds, and characterises reclassified variants by gene, consequence type, hereditary cancer gene membership, and disease category.
+Notebook 5 — ENIGMA BRCA Validation externally validates VIPER against ENIGMA BRCA Exchange classifications, annotates variants through the same VEP and CADD pipeline used in training, measures concordance, and evaluates agreement between VIPER's VUS reclassifications and ENIGMA's independent verdicts.
 
-```
-VIPER/
-├── README.md
-├── 01_EDA_and_Data_Prep.ipynb          # Data loading, label grouping, EDA, feature engineering
-├── 03_Model_Training.ipynb             # Baseline comparison, tuning, evaluation, three-zone classifier
-├── 04_SHAP_Analysis.ipynb              # Global + local feature importance (TreeExplainer)
-├── 05_VUS_Reclassification.ipynb       # VUS prediction, sensitivity analysis, disease enrichment
-├── 06_BRCA_Validation.ipynb            # External validation against ENIGMA BRCA Exchange
-└── figures/
+Data Sources
 
----
+ClinVar — variant classifications and condition metadata (GRCh38)
+Ensembl VEP — functional annotations (consequence, IMPACT, SIFT, PolyPhen, gnomAD allele frequencies)
+CADD v1.6 — pathogenicity scores via https://cadd.bihealth.org/score
+BRCA Exchange — ENIGMA-classified BRCA1/BRCA2 variants for external validation
 
-## Pipeline
 
-**Stage 1 — EDA & Data Preparation** (`01_EDA_and_Data_Prep.ipynb`)
-- Label grouping: Pathogenic / Benign / VUS
-- Exploratory data analysis: class distribution, CADD PHRED, MAX_AF, IMPACT, consequences
-- Feature engineering → `clinvar_features_engineered.tsv`
+Features Used
+Nine variant-level features were used for classification: CADD PHRED score, maximum population allele frequency (MAX_AF), PolyPhen-2 score, VEP IMPACT category, variant class, transcript biotype, SIFT category, PolyPhen category, and grouped consequence type. SIFT score was excluded after correlation analysis due to collinearity with PolyPhen score.
 
-**Stage 2 — Model Training** (`03_Model_Training.ipynb`)
-- 80/20 stratified train/test split; VUS held out entirely
-- Baseline comparison: Random Forest, XGBoost, SVM, Logistic Regression
-- GridSearchCV hyperparameter tuning (5-fold, ROC-AUC scored)
-- 10-fold cross-validation + bootstrap 95% confidence intervals
-- Three-zone probabilistic classifier → `rf_model_tuned.pkl`
+Classification Scheme
+After training, variants are assigned to one of three zones based on predicted pathogenicity probability. Variants with probability ≥ 0.80 are reclassified as Pathogenic, those with probability <= 0.20 are reclassified as Benign, and those in between remain as VUS. The Pathogenic threshold was selected at the point on the Precision-Recall curve where precision ≥ 0.99 with maximum recall.
 
-**Stage 3 — SHAP Analysis** (`04_SHAP_Analysis.ipynb`)
-- TreeExplainer on 1,000-sample test set
-- Global importance bar chart, beeswarm plot, dependence plots (CADD PHRED, MAX_AF, PolyPhen Score)
-
-**Stage 4 — VUS Reclassification** (`05_VUS_Reclassification.ipynb`)
-- Predict all 40,894 held-out VUS variants
-- Three-zone output with threshold sensitivity analysis (0.70 / 0.80 / 0.90 / 0.95)
-- Gene, consequence, and disease category enrichment analysis
-- Output → `vus_reclassification_results.csv`
-
-**Stage 5 — External Validation** (`06_BRCA_Validation.ipynb`)
-- ENIGMA BRCA Exchange gold-standard dataset (n = 7,446)
-- VEP + CADD annotation using same pipeline as training
-- Concordance: 98.83% | ROC-AUC: 1.00
-- ClinVar VUS × ENIGMA discordance analysis
-
----
-
-## Data
-
-### Inputs
-
-| File | Source | Description |
-|---|---|---|
-| `clinvar_vep_cadd_final.tsv` | ClinVar + VEP + CADD | Merged variant-level annotations (GRCh38) |
-| `clinvar_result.xlsx` | ClinVar | Raw export with `Condition(s)` metadata |
-| `variants_output.tsv` | BRCA Exchange | ENIGMA-classified BRCA1/BRCA2 variants |
-| `enigma_vep_annotated.vcf` | VEP (local run) | VEP output for ENIGMA variants |
-| `enigma_cadd_output.tsv.gz` | CADD v1.6 (https://cadd.bihealth.org/score) | CADD scores for ENIGMA variants |
-
-### Key Intermediate Files
-
-| File | Generated by | Description |
-|---|---|---|
-| `clinvar_features_engineered.tsv` | Notebook 01 | ML-ready feature matrix |
-| `rf_model_tuned.pkl` | Notebook 03 | Tuned Random Forest model |
-| `xgb_model_tuned.pkl` | Notebook 03 | Tuned XGBoost model |
-| `feature_cols.pkl` | Notebook 03 | Ordered feature list |
-| `train_test_splits.pkl` | Notebook 03 | Saved train/test splits |
-| `model_config.json` | Notebook 03 | Hyperparameters, AUC, thresholds |
-| `shap_values.pkl` | Notebook 04 | SHAP values + sample index |
-| `vus_reclassification_results.csv` | Notebook 05 | VUS with predicted class + probability |
-| `enigma_validation_results.tsv` | Notebook 06 | ENIGMA variants + ML predictions |
-| `enigma_validation_stats.json` | Notebook 06 | Concordance, AUC, coverage metrics |
-| `vus_enigma_concordance.tsv` | Notebook 06 | ClinVar VUS × ENIGMA match |
-
----
-
-## Features
-
-Nine variant-level features were used for classification:
-
-| Feature | Type | Source |
-|---|---|---|
-| `PHRED` | Continuous | CADD v1.6 (cadd.bihealth.org) |
-| `MAX_AF` | Continuous | gnomAD via VEP (filled 0 if absent) |
-| `PolyPhen_score` | Continuous | VEP PolyPhen-2 |
-| `IMPACT_encoded` | Categorical | VEP impact tier (HIGH / MODERATE / LOW / MODIFIER) |
-| `VARIANT_CLASS_encoded` | Categorical | VEP variant class (SNV / indel / etc.) |
-| `BIOTYPE_encoded` | Categorical | VEP transcript biotype |
-| `SIFT_cat_encoded` | Categorical | VEP SIFT category |
-| `PolyPhen_cat_encoded` | Categorical | VEP PolyPhen category |
-| `Consequence_grouped_encoded` | Categorical | VEP consequence (grouped to 10 classes) |
-
-> `SIFT_score` was dropped after correlation analysis due to high collinearity with `PolyPhen_score`.
-
----
-
-## Classification Scheme
-
-A three-zone probabilistic classifier is applied after model training:
-
-```
-Predicted probability (P)       →   Class
-────────────────────────────────────────────
-P ≥ 0.80                        →   Reclassified Pathogenic
-0.20 ≤ P < 0.80                 →   Remains VUS
-P < 0.20                        →   Reclassified Benign
-────────────────────────────────────────────
-```
-
-The Pathogenic threshold (0.80) was selected from the Precision-Recall curve at the point where precision ≥ 0.99 with maximum recall. The Benign threshold (0.20) was set symmetrically. Sensitivity analysis across thresholds (0.70 / 0.80 / 0.90 / 0.95) is reported in Notebook 05.
-
----
-
-## Environment
-
-```bash
-python >= 3.9
-pandas
-numpy
-scikit-learn
-xgboost
-shap
-matplotlib
-seaborn
-openpyxl
-```
-
-Install all dependencies:
-
-```bash
-pip install pandas numpy scikit-learn xgboost shap matplotlib seaborn openpyxl
-```
-
----
-
-## Usage
-
-Run notebooks in order:
-
-```bash
-jupyter notebook 01_EDA_and_Data_Prep.ipynb
-jupyter notebook 03_Model_Training.ipynb
-jupyter notebook 04_SHAP_Analysis.ipynb
-jupyter notebook 05_VUS_Reclassification.ipynb
-jupyter notebook 06_BRCA_Validation.ipynb
-```
-
-> All notebooks read from and write to the working directory. Ensure input files are present before running each stage (see Data section above).
-
----
-
-## License
-
+License
 This project is for research use. Data sourced from ClinVar and BRCA Exchange is subject to their respective data use policies.
