@@ -13,9 +13,9 @@ A machine learning framework for predictive interpretation of variants of uncert
 | VUS reclassified (of 40,894) | ~69.4% |
 | High-confidence coverage | ~99% |
 
-What This Repository Contains
+## What This Repository Contains
 This repository covers the full VIPER analysis pipeline across five notebooks.
-Notebook 1 — EDA and Data Preparation loads the ClinVar dataset, groups raw classification terms into Pathogenic, Benign, and VUS categories, performs exploratory data analysis across variant consequence, CADD PHRED score, population allele frequency, and VEP IMPACT categories, and produces the engineered feature matrix used for model training.
+| Notebook 1 |— EDA and Data Preparation loads the ClinVar dataset, groups raw classification terms into Pathogenic, Benign, and VUS categories, performs exploratory data analysis across variant consequence, CADD PHRED score, population allele frequency, and VEP IMPACT categories, and produces the engineered feature matrix used for model training.
 Notebook 2 — Model Training trains and compares four classifiers (Random Forest, XGBoost, SVM, Logistic Regression), tunes the top two using GridSearchCV with 5-fold cross-validation, evaluates performance with ROC and Precision-Recall curves including bootstrap confidence intervals, and defines the three-zone probabilistic classification scheme.
 Notebook 3 — SHAP Analysis uses TreeExplainer to compute SHAP values on a stratified test sample, producing global feature importance rankings, a beeswarm plot showing directional feature effects, and dependence plots for the top three features (CADD PHRED, MAX_AF, PolyPhen Score).
 Notebook 4 — VUS Reclassification applies the trained model to all 40,894 held-out VUS variants, reports reclassification outcomes across four probability thresholds, and characterises reclassified variants by gene, consequence type, hereditary cancer gene membership, and disease category.
