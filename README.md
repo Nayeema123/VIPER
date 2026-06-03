@@ -24,7 +24,7 @@ VIPER/
 ├── 04_SHAP_Analysis.ipynb              # Global + local feature importance (TreeExplainer)
 ├── 05_VUS_Reclassification.ipynb       # VUS prediction, sensitivity analysis, disease enrichment
 ├── 06_BRCA_Validation.ipynb            # External validation against ENIGMA BRCA Exchange
-└── figures/
+└── figures/ 
 
 ---
 ## Pipeline
