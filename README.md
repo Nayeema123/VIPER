@@ -28,12 +28,11 @@ Ensembl VEP — functional annotations (consequence, IMPACT, SIFT, PolyPhen, gno
 CADD v1.6 — pathogenicity scores via https://cadd.bihealth.org/score
 BRCA Exchange — ENIGMA-classified BRCA1/BRCA2 variants for external validation
 
-
 ## Features Used
 Nine variant-level features were used for classification: CADD PHRED score, maximum population allele frequency (MAX_AF), PolyPhen-2 score, VEP IMPACT category, variant class, transcript biotype, SIFT category, PolyPhen category, and grouped consequence type. SIFT score was excluded after correlation analysis due to collinearity with PolyPhen score.
 
 ## Classification Scheme
-# 
+
 After training, variants are assigned to one of three zones based on predicted pathogenicity probability. Variants with probability ≥ 0.80 are reclassified as Pathogenic, those with probability <= 0.20 are reclassified as Benign, and those in between remain as VUS. The Pathogenic threshold was selected at the point on the Precision-Recall curve where precision ≥ 0.99 with maximum recall.
 
 ##  License
