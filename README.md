@@ -13,7 +13,6 @@ A machine learning framework for predictive interpretation of variants of uncert
 | VUS reclassified (of 40,894) | ~69.4% |
 | High-confidence coverage | ~99% |
 
----
 ## Repository Structure
 
 ```
@@ -24,49 +23,42 @@ VIPER/
 ├── 04_SHAP_Analysis.ipynb              # Global + local feature importance (TreeExplainer)
 ├── 05_VUS_Reclassification.ipynb       # VUS prediction, sensitivity analysis, disease enrichment
 ├── 06_BRCA_Validation.ipynb            # External validation against ENIGMA BRCA Exchange
-└── figures/ 
+└── figures/
 
 ---
+
 ## Pipeline
 
-```
-ClinVar variants
-      │
-      ▼
-01_EDA_and_Data_Prep
-  ├── Label grouping (Pathogenic / Benign / VUS)
-  ├── EDA (class distribution, CADD PHRED, MAX_AF, IMPACT, consequences)
-  └── Feature engineering → clinvar_features_engineered.tsv
-      │
-      ▼
-03_Model_Training
-  ├── Train/test split (80/20 stratified; VUS held out)
-  ├── Baseline: RF, XGBoost, SVM, Logistic Regression
-  ├── GridSearchCV tuning (5-fold, ROC-AUC)
-  ├── 10-fold CV + bootstrap 95% CI
-  └── Three-zone classifier → rf_model_tuned.pkl
-      │
-      ├──────────────────────────────────────┐
-      ▼                                      ▼
-04_SHAP_Analysis                   05_VUS_Reclassification
-  ├── TreeExplainer (1k sample)      ├── Predict all 40,894 VUS
-  ├── Global importance bar          ├── Three-zone output
-  ├── Beeswarm plot                  ├── Threshold sensitivity analysis
-  └── Dependence plots               ├── Gene / consequence enrichment
-      (CADD PHRED, MAX_AF,           ├── Hereditary cancer gene analysis
-       PolyPhen Score)               ├── Disease category breakdown
-                                     └── vus_reclassification_results.csv
-                                                │
-                                                ▼
-                                    06_BRCA_Validation
-                                      ├── ENIGMA BRCA Exchange (n=7,446)
-                                      ├── VEP + CADD annotation
-                                      ├── Feature engineering (same pipeline)
-                                      ├── Concordance: 98.83%
-                                      └── VUS discordance analysis
-```
+**Stage 1 — EDA & Data Preparation** (`01_EDA_and_Data_Prep.ipynb`)
+- Label grouping: Pathogenic / Benign / VUS
+- Exploratory data analysis: class distribution, CADD PHRED, MAX_AF, IMPACT, consequences
+- Feature engineering → `clinvar_features_engineered.tsv`
+
+**Stage 2 — Model Training** (`03_Model_Training.ipynb`)
+- 80/20 stratified train/test split; VUS held out entirely
+- Baseline comparison: Random Forest, XGBoost, SVM, Logistic Regression
+- GridSearchCV hyperparameter tuning (5-fold, ROC-AUC scored)
+- 10-fold cross-validation + bootstrap 95% confidence intervals
+- Three-zone probabilistic classifier → `rf_model_tuned.pkl`
+
+**Stage 3 — SHAP Analysis** (`04_SHAP_Analysis.ipynb`)
+- TreeExplainer on 1,000-sample test set
+- Global importance bar chart, beeswarm plot, dependence plots (CADD PHRED, MAX_AF, PolyPhen Score)
+
+**Stage 4 — VUS Reclassification** (`05_VUS_Reclassification.ipynb`)
+- Predict all 40,894 held-out VUS variants
+- Three-zone output with threshold sensitivity analysis (0.70 / 0.80 / 0.90 / 0.95)
+- Gene, consequence, and disease category enrichment analysis
+- Output → `vus_reclassification_results.csv`
+
+**Stage 5 — External Validation** (`06_BRCA_Validation.ipynb`)
+- ENIGMA BRCA Exchange gold-standard dataset (n = 7,446)
+- VEP + CADD annotation using same pipeline as training
+- Concordance: 98.83% | ROC-AUC: 1.00
+- ClinVar VUS × ENIGMA discordance analysis
 
 ---
+
 ## Data
 
 ### Inputs
@@ -106,14 +98,14 @@ Nine variant-level features were used for classification:
 | `PHRED` | Continuous | CADD v1.6 (cadd.bihealth.org) |
 | `MAX_AF` | Continuous | gnomAD via VEP (filled 0 if absent) |
 | `PolyPhen_score` | Continuous | VEP PolyPhen-2 |
-| `IMPACT_encoded` | Categorical | VEP impact tier (HIGH/MODERATE/LOW/MODIFIER) |
-| `VARIANT_CLASS_encoded` | Categorical | VEP variant class (SNV/indel/etc.) |
+| `IMPACT_encoded` | Categorical | VEP impact tier (HIGH / MODERATE / LOW / MODIFIER) |
+| `VARIANT_CLASS_encoded` | Categorical | VEP variant class (SNV / indel / etc.) |
 | `BIOTYPE_encoded` | Categorical | VEP transcript biotype |
 | `SIFT_cat_encoded` | Categorical | VEP SIFT category |
 | `PolyPhen_cat_encoded` | Categorical | VEP PolyPhen category |
 | `Consequence_grouped_encoded` | Categorical | VEP consequence (grouped to 10 classes) |
 
-> `SIFT_score` was dropped after correlation analysis (high collinearity with `PolyPhen_score`).
+> `SIFT_score` was dropped after correlation analysis due to high collinearity with `PolyPhen_score`.
 
 ---
 
@@ -122,12 +114,12 @@ Nine variant-level features were used for classification:
 A three-zone probabilistic classifier is applied after model training:
 
 ```
-Predicted probability (P)
-─────────────────────────────────────────────────────
-P ≥ 0.80   →  Reclassified Pathogenic
-0.20 ≤ P < 0.80  →  Remains VUS
-P < 0.20   →  Reclassified Benign
-─────────────────────────────────────────────────────
+Predicted probability (P)       →   Class
+────────────────────────────────────────────
+P ≥ 0.80                        →   Reclassified Pathogenic
+0.20 ≤ P < 0.80                 →   Remains VUS
+P < 0.20                        →   Reclassified Benign
+────────────────────────────────────────────
 ```
 
 The Pathogenic threshold (0.80) was selected from the Precision-Recall curve at the point where precision ≥ 0.99 with maximum recall. The Benign threshold (0.20) was set symmetrically. Sensitivity analysis across thresholds (0.70 / 0.80 / 0.90 / 0.95) is reported in Notebook 05.
@@ -137,7 +129,7 @@ The Pathogenic threshold (0.80) was selected from the Precision-Recall curve at 
 ## Environment
 
 ```bash
-python>=3.9
+python >= 3.9
 pandas
 numpy
 scikit-learn
@@ -145,10 +137,10 @@ xgboost
 shap
 matplotlib
 seaborn
-openpyxl          # for reading clinvar_result.xlsx
+openpyxl
 ```
 
-Install dependencies:
+Install all dependencies:
 
 ```bash
 pip install pandas numpy scikit-learn xgboost shap matplotlib seaborn openpyxl
@@ -172,8 +164,6 @@ jupyter notebook 06_BRCA_Validation.ipynb
 
 ---
 
-
 ## License
 
 This project is for research use. Data sourced from ClinVar and BRCA Exchange is subject to their respective data use policies.
-
